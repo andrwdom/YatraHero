@@ -5,6 +5,7 @@ import yatraText from '../assets/yatratxt.png'
 import torriGate from '../assets/torrigate.png'
 import yearText from '../assets/2026txt.png'
 import videoSrc from '../assets/video.mp4'
+import purpleBg from '../assets/purple.jpeg'
 
 function Hero() {
   // Keep a loader visible until every <img> in this component finishes (load or error).
@@ -197,6 +198,45 @@ function Hero() {
         {/* Torii Gate Overlay - Foreground Mask (Topmost) */}
         <div className="hero-torri-gate">
           <img src={torriGate} alt="Torii Gate" className="torri-gate-image" {...img.torii} />
+        </div>
+      </div>
+
+      {/* Section Divider with Scrolling Text */}
+      <div className="hero-divider">
+        <div className="hero-divider-background">
+          <img src={purpleBg} alt="" aria-hidden="true" />
+        </div>
+        <div className="hero-divider-content">
+          <div className="hero-divider-scroll">
+            <div className="hero-divider-text">
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+            </div>
+            <div className="hero-divider-text" aria-hidden="true">
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span>FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

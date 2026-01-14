@@ -17,6 +17,22 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Victory Striker';
+  src: url('../assets/fonts/Victory Striker Sans Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Akira Expanded';
+  src: url('../assets/fonts/Akira Expanded Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 .hero {
   position: relative;
   width: 100%;
@@ -741,5 +757,103 @@
 
   .hero-video {
     border-radius: 1.1cqw;
+  }
+}
+
+/* Section Divider with Scrolling Text */
+.hero-divider {
+  position: relative;
+  width: 100%;
+  height: 65px;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.hero-divider-background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.hero-divider-background img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-divider-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero-divider-scroll {
+  display: flex;
+  white-space: nowrap;
+  animation: hero-divider-scroll 20s linear infinite;
+  will-change: transform;
+}
+
+.hero-divider-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Akira Expanded', var(--hero-font-family);
+  font-size: 2.5rem;
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.95);
+  letter-spacing: 0.05em;
+}
+
+.hero-divider-star {
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 2.8rem;
+  display: inline-block;
+}
+
+@keyframes hero-divider-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Responsive adjustments for divider */
+@media (max-width: 768px) {
+  .hero-divider {
+    height: 55px;
+  }
+
+  .hero-divider-text {
+    font-size: 1.9rem;
+    gap: 10px;
+  }
+
+  .hero-divider-star {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-divider {
+    height: 45px;
+  }
+
+  .hero-divider-text {
+    font-size: 1.5rem;
+    gap: 8px;
+  }
+
+  .hero-divider-star {
+    font-size: 1.8rem;
   }
 }
