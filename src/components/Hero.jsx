@@ -13,6 +13,25 @@ function Hero() {
   const [doneCount, setDoneCount] = useState(0)
   const [hasLoaded, setHasLoaded] = useState(false)
 
+  // Lantern (lamp) glow hotspots placed over the background art.
+  // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
+  const lamps = useMemo(
+    () => [
+      { id: 'lamp-0', x: 4.5, y: 18.2 },
+      { id: 'lamp-1', x: 16.0, y: 20.1 },
+      { id: 'lamp-2', x: 30.2, y: 19.4 },
+      { id: 'lamp-3', x: 44.2, y: 20.0 },
+      { id: 'lamp-4', x: 58.0, y: 20.1 },
+      { id: 'lamp-5', x: 71.6, y: 20.4 },
+      { id: 'lamp-6', x: 85.0, y: 20.0 },
+      { id: 'lamp-7', x: 96.0, y: 18.6 },
+    ],
+    []
+  )
+
+  // Incrementing "sequence" values let us re-trigger a one-shot CSS animation per lamp.
+  const [lampSeq, setLampSeq] = useState(() => Object.fromEntries(lamps.map((l) => [l.id, 0])))
+
   const markDone = useCallback((key) => {
     if (doneKeysRef.current.has(key)) return
     doneKeysRef.current.add(key)
@@ -50,6 +69,50 @@ function Hero() {
     return () => window.clearTimeout(t)
   }, [hasLoaded, isLoading])
 
+  // Random lamp blooms (random order / random timing).
+  useEffect(() => {
+    if (isLoading) return
+
+    let cancelled = false
+    let timeoutId = 0
+
+    const rand = (min, max) => min + Math.random() * (max - min)
+
+    const schedule = () => {
+      if (cancelled) return
+
+      // Next bloom in 300ms–1200ms
+      const nextIn = Math.round(rand(300, 1200))
+      timeoutId = window.setTimeout(() => {
+        if (cancelled) return
+
+        // Bloom 1–2 random lamps
+        const bloomCount = Math.random() < 0.35 ? 2 : 1
+        const picked = new Set()
+        while (picked.size < bloomCount) {
+          picked.add(lamps[Math.floor(Math.random() * lamps.length)].id)
+        }
+
+        setLampSeq((prev) => {
+          const next = { ...prev }
+          picked.forEach((id) => {
+            next[id] = (next[id] || 0) + 1
+          })
+          return next
+        })
+
+        schedule()
+      }, nextIn)
+    }
+
+    schedule()
+
+    return () => {
+      cancelled = true
+      if (timeoutId) window.clearTimeout(timeoutId)
+    }
+  }, [isLoading, lamps])
+
   return (
     <section className="hero">
       <div
@@ -79,6 +142,28 @@ function Hero() {
         {/* Background Layer - Base */}
         <div className="hero-background">
           <img src={heroBg} alt="Hero Background" className="hero-bg-image" {...img.bg} />
+        </div>
+
+        {/* Lamp glow overlay (maps to the lanterns in the background image) */}
+        <div className="hero-lamps" aria-hidden="true">
+          {lamps.map((lamp) => {
+            const seq = lampSeq[lamp.id] || 0
+            const amp = (0.85 + Math.random() * 0.6).toFixed(2)
+            const dur = `${Math.round(520 + Math.random() * 680)}ms`
+
+            return (
+              <span
+                key={`${lamp.id}-${seq}`}
+                className="hero-lamp-glow"
+                style={{
+                  '--x': `${lamp.x}%`,
+                  '--y': `${lamp.y}%`,
+                  '--amp': amp,
+                  '--bloom-dur': dur,
+                }}
+              />
+            )
+          })}
         </div>
 
         {/* Video Container - Center Focus */}
