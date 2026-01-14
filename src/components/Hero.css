@@ -373,6 +373,43 @@
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
 }
 
+/* Flickering effect for 2026 text */
+.hero-stage.is-loaded .year-text-image {
+  animation: hero-year-flicker 3s ease-in-out infinite;
+  animation-delay: 500ms;
+}
+
+@keyframes hero-year-flicker {
+  0%, 100% {
+    opacity: 1;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 200, 180, 0.3));
+  }
+  15% {
+    opacity: 0.92;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(255, 200, 180, 0.5));
+  }
+  30% {
+    opacity: 0.98;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 6px rgba(255, 200, 180, 0.2));
+  }
+  45% {
+    opacity: 0.95;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(255, 200, 180, 0.4));
+  }
+  60% {
+    opacity: 1;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 200, 180, 0.3));
+  }
+  75% {
+    opacity: 0.93;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 200, 180, 0.6));
+  }
+  90% {
+    opacity: 0.97;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 7px rgba(255, 200, 180, 0.25));
+  }
+}
+
 /* Action Buttons - Below 2026 text, above Torii gate */
 .hero-buttons {
   position: absolute;
