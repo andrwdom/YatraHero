@@ -1,0 +1,3 @@
+# Public assets folder
+# Files in this folder are served as-is and can be referenced with absolute paths
+# Example: <img src="/logo.png" />
