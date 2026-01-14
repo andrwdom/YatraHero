@@ -201,41 +201,21 @@ function Hero() {
         </div>
       </div>
 
-      {/* Section Divider with Scrolling Text */}
-      <div className="hero-divider">
-        <div className="hero-divider-background">
-          <img src={purpleBg} alt="" aria-hidden="true" />
-        </div>
-        <div className="hero-divider-content">
-          <div className="hero-divider-scroll">
-            <div className="hero-divider-text">
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-            </div>
-            <div className="hero-divider-text" aria-hidden="true">
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-              <span>FEB 13 & 14</span>
-              <span className="hero-divider-star">✦</span>
-            </div>
+      {/* Section Divider - Bottom of Hero */}
+      <div className="hero-section-divider">
+        <div className="hero-divider-scroll">
+          <div className="hero-divider-content">
+            <span className="hero-divider-text">14</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEB 13 & 14</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEB 14</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">14</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEB 13 & 14</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEB 14</span>
           </div>
         </div>
       </div>

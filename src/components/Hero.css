@@ -18,14 +18,6 @@
 }
 
 @font-face {
-  font-family: 'Victory Striker';
-  src: url('../assets/fonts/Victory Striker Sans Demo.otf') format('opentype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Akira Expanded';
   src: url('../assets/fonts/Akira Expanded Demo.otf') format('opentype');
   font-weight: normal;
@@ -44,6 +36,7 @@
   background: #160018;
   --hero-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  padding-bottom: 0;
 }
 
 .hero-loader {
@@ -478,42 +471,6 @@
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
 }
 
-/* Flickering effect for 2026 text */
-.hero-stage.is-loaded .year-text-image {
-  animation: hero-year-flicker 3s ease-in-out infinite;
-  animation-delay: 2000ms;
-}
-
-@keyframes hero-year-flicker {
-  0%, 100% {
-    opacity: 1;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 200, 180, 0.3));
-  }
-  15% {
-    opacity: 0.92;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 12px rgba(255, 200, 180, 0.5));
-  }
-  30% {
-    opacity: 0.98;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 6px rgba(255, 200, 180, 0.2));
-  }
-  45% {
-    opacity: 0.95;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 10px rgba(255, 200, 180, 0.4));
-  }
-  60% {
-    opacity: 1;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 200, 180, 0.3));
-  }
-  75% {
-    opacity: 0.93;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 14px rgba(255, 200, 180, 0.6));
-  }
-  90% {
-    opacity: 0.97;
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 7px rgba(255, 200, 180, 0.25));
-  }
-}
 
 /* Action Buttons - Below 2026 text, above Torii gate */
 .hero-buttons {
@@ -760,62 +717,58 @@
   }
 }
 
-/* Section Divider with Scrolling Text */
-.hero-divider {
-  position: relative;
-  width: 100%;
-  height: 65px;
-  overflow: hidden;
-  z-index: 10;
-}
-
-.hero-divider-background {
+/* Hero Section Divider */
+.hero-section-divider {
   position: absolute;
-  inset: 0;
+  bottom: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.hero-divider-background img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-}
-
-.hero-divider-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
+  background-image: url('../assets/purple.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: 99999;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  overflow: hidden;
+  padding: 0.25rem 0;
+  height: auto;
+  line-height: 1;
 }
 
 .hero-divider-scroll {
-  display: flex;
+  width: 100%;
+  overflow: hidden;
   white-space: nowrap;
-  animation: hero-divider-scroll 20s linear infinite;
-  will-change: transform;
+  position: relative;
+}
+
+.hero-divider-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+  animation: hero-divider-scroll 25s linear infinite;
+  font-family: 'Akira Expanded', var(--hero-font-family);
+  font-size: 1.2rem;
+  color: #FFFFFF;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1;
 }
 
 .hero-divider-text {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
   font-family: 'Akira Expanded', var(--hero-font-family);
-  font-size: 2.5rem;
-  font-weight: normal;
-  color: rgba(255, 255, 255, 0.95);
-  letter-spacing: 0.05em;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .hero-divider-star {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 2.8rem;
-  display: inline-block;
+  font-family: 'Wave', var(--hero-font-family);
+  font-size: 1.4rem;
+  color: #FFFFFF;
+  opacity: 1;
+  line-height: 1;
 }
 
 @keyframes hero-divider-scroll {
@@ -827,33 +780,16 @@
   }
 }
 
-/* Responsive adjustments for divider */
-@media (max-width: 768px) {
-  .hero-divider {
-    height: 55px;
-  }
-
-  .hero-divider-text {
-    font-size: 1.9rem;
-    gap: 10px;
-  }
-
-  .hero-divider-star {
-    font-size: 2.2rem;
-  }
+/* Crop hero background at bottom - no gap */
+.hero-bleed-bg {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 35px), 0 calc(100% - 35px));
 }
 
-@media (max-width: 480px) {
-  .hero-divider {
-    height: 45px;
-  }
+.hero-stage {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 35px), 0 calc(100% - 35px));
+}
 
-  .hero-divider-text {
-    font-size: 1.5rem;
-    gap: 8px;
-  }
-
-  .hero-divider-star {
-    font-size: 1.8rem;
-  }
+.hero {
+  margin-bottom: 0;
+  padding-bottom: 0;
 }
