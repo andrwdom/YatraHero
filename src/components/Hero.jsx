@@ -8,11 +8,13 @@ import videoSrc from '../assets/video.mp4'
 import purpleBg from '../assets/purple.jpeg'
 import eventImage from '../assets/event.jpeg'
 
-function GlitchText({ koreanText, englishText, className, delay = 0 }) {
+function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart = false }) {
   const [isGlitching, setIsGlitching] = useState(false)
   const [showEnglish, setShowEnglish] = useState(false)
 
   useEffect(() => {
+    if (!shouldStart) return
+
     // Start glitch effect after delay
     const glitchTimer = setTimeout(() => {
       setIsGlitching(true)
@@ -28,7 +30,7 @@ function GlitchText({ koreanText, englishText, className, delay = 0 }) {
       clearTimeout(glitchTimer)
       clearTimeout(transitionTimer)
     }
-  }, [delay])
+  }, [delay, shouldStart])
 
   return (
     <span className={`glitch-text-wrapper ${className} ${isGlitching ? 'is-glitching' : ''} ${showEnglish ? 'show-english' : ''}`}>
@@ -52,8 +54,10 @@ function Hero() {
   const aboutRef = useRef(null)
   const aboutTitleRef = useRef(null)
   const aboutContentRef = useRef(null)
+  const featuresSectionRef = useRef(null)
   const [aboutStep, setAboutStep] = useState(0) // 0 = ABOUT RIT, 1 = ABOUT YATRA'26
   const hasAboutEnteredRef = useRef(false)
+  const [isFeaturesSectionVisible, setIsFeaturesSectionVisible] = useState(false)
 
   // Lantern (lamp) glow hotspots placed over the background art.
   // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
@@ -169,6 +173,27 @@ function Hero() {
       observer.disconnect()
     }
   }, [runAboutReveal])
+
+  // Features section: trigger glitch animation when section enters view
+  useEffect(() => {
+    const sectionEl = featuresSectionRef.current
+    if (!sectionEl) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        setIsFeaturesSectionVisible(true)
+        observer.disconnect()
+      },
+      { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+    )
+
+    observer.observe(sectionEl)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
 
   // Re-run reveal when we swap step content (only after the user has reached the section once).
   useEffect(() => {
@@ -504,7 +529,7 @@ function Hero() {
     </div>
 
     {/* FEATURES OF YATRA section (content coming next) */}
-    <section className="features-section" aria-label="Features of Yatra">
+    <section className="features-section" aria-label="Features of Yatra" ref={featuresSectionRef}>
       <div className="features-container">
         <h2 className="features-title">
           <GlitchText 
@@ -512,6 +537,7 @@ function Hero() {
             englishText="FEATURES OF" 
             className="features-title-features" 
             delay={0}
+            shouldStart={isFeaturesSectionVisible}
           />
           <br />
           <GlitchText 
@@ -519,6 +545,7 @@ function Hero() {
             englishText="YATRA" 
             className="features-title-rest" 
             delay={500}
+            shouldStart={isFeaturesSectionVisible}
           />
         </h2>
         <div className="features-event-media">
