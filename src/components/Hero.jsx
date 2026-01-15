@@ -793,14 +793,14 @@ function Hero() {
         </h2>
         <div className="features-event-media features-event-media--left">
           <div className="features-event-badge">
-            40+ Events with CASH PRICE
+            50+ Events with CASH PRICE
           </div>
           <img src={eventImage} alt="Yatra Event" className="features-event-image" />
           <button className="features-show-more-btn">SHOW MORE</button>
         </div>
         <div className="features-event-media features-event-media--right">
           <div className="features-event-badge">
-            ELECTRIFYING PERFORMANCE
+            ELECTRIFYING PERFORMANCES
           </div>
           <img src={performanceImage} alt="Electrifying Performance" className="features-event-image" />
           <button className="features-show-more-btn">SHOW MORE</button>
