@@ -86,19 +86,33 @@ function Hero() {
   }, [hasLoaded])
 
   const runAboutReveal = useCallback(() => {
-    const titleEl = aboutTitleRef.current
-    const contentEl = aboutContentRef.current
-    if (!titleEl || !contentEl) return
+    // Wait for React to finish mounting new elements when step changes
+    const attemptReveal = (attempts = 0) => {
+      const titleEl = aboutTitleRef.current
+      const contentEl = aboutContentRef.current
+      
+      if (!titleEl || !contentEl) {
+        // If elements aren't ready yet, try again (max 5 attempts)
+        if (attempts < 5) {
+          window.requestAnimationFrame(() => attemptReveal(attempts + 1))
+        }
+        return
+      }
 
-    // Reset classes so we can replay the reveal on step change.
-    titleEl.classList.remove('is-visible', 'is-exiting')
-    contentEl.classList.remove('is-visible', 'is-exiting')
+      // Reset classes so we can replay the reveal on step change.
+      titleEl.classList.remove('is-visible', 'is-exiting')
+      contentEl.classList.remove('is-visible', 'is-exiting')
 
-    // Next frame: start reveal.
-    window.requestAnimationFrame(() => {
-      titleEl.classList.add('is-visible')
-      window.setTimeout(() => contentEl.classList.add('is-visible'), 180)
-    })
+      // Wait one more frame to ensure classes are reset, then start reveal
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          titleEl.classList.add('is-visible')
+          window.setTimeout(() => contentEl.classList.add('is-visible'), 180)
+        })
+      })
+    }
+
+    attemptReveal()
   }, [])
 
   // About section: reveal when it enters view (and remember it's been seen).
@@ -126,7 +140,13 @@ function Hero() {
   // Re-run reveal when we swap step content (only after the user has reached the section once).
   useEffect(() => {
     if (!hasAboutEnteredRef.current) return
-    runAboutReveal()
+    
+    // Wait for exit animation to finish (260ms) before revealing new content
+    const timeoutId = window.setTimeout(() => {
+      runAboutReveal()
+    }, 280)
+    
+    return () => window.clearTimeout(timeoutId)
   }, [aboutStep, runAboutReveal])
 
   // Sticky scroll progression inside About:
@@ -395,7 +415,7 @@ function Hero() {
       <div className="about-sticky">
         <div className="about-container">
         {aboutStep === 0 ? (
-          <>
+          <div key="about-rit">
             <h2 className="about-title reveal" ref={aboutTitleRef}>
               <span className="about-title-about">ABOUT</span>{' '}
               <span className="about-title-rit">RIT</span>
@@ -409,9 +429,9 @@ function Hero() {
               attaining the eligibility to apply for accreditation. The College is accredited by the National
               Assessment and Accreditation Council (NAAC) with 'A++' Grade.
             </p>
-          </>
+          </div>
         ) : (
-          <>
+          <div key="about-yatra">
             <h2 className="about-title reveal" ref={aboutTitleRef}>
               <span className="about-title-about">ABOUT</span>{' '}
               <span className="about-title-rit">YATRA&apos;26</span>
@@ -424,7 +444,7 @@ function Hero() {
               perform better. In fact, students can also leverage the advantage of participating in various
               activities. Many chief guests are being invited to join us
             </p>
-          </>
+          </div>
         )}
         </div>
       </div>
