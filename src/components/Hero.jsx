@@ -6,6 +6,39 @@ import torriGate from '../assets/torrigate.png'
 import yearText from '../assets/2026txt.png'
 import videoSrc from '../assets/video.mp4'
 import purpleBg from '../assets/purple.jpeg'
+import eventImage from '../assets/event.jpeg'
+
+function GlitchText({ koreanText, englishText, className, delay = 0 }) {
+  const [isGlitching, setIsGlitching] = useState(false)
+  const [showEnglish, setShowEnglish] = useState(false)
+
+  useEffect(() => {
+    // Start glitch effect after delay
+    const glitchTimer = setTimeout(() => {
+      setIsGlitching(true)
+    }, 1000 + delay)
+
+    // Transition to English after glitch
+    const transitionTimer = setTimeout(() => {
+      setShowEnglish(true)
+      setIsGlitching(false)
+    }, 2500 + delay)
+
+    return () => {
+      clearTimeout(glitchTimer)
+      clearTimeout(transitionTimer)
+    }
+  }, [delay])
+
+  return (
+    <span className={`glitch-text-wrapper ${className} ${isGlitching ? 'is-glitching' : ''} ${showEnglish ? 'show-english' : ''}`}>
+      {koreanText && (
+        <span className="glitch-text-korean">{koreanText}</span>
+      )}
+      <span className="glitch-text-english">{englishText}</span>
+    </span>
+  )
+}
 
 function Hero() {
   // Keep a loader visible until every <img> in this component finishes (load or error).
@@ -446,6 +479,54 @@ function Hero() {
             </p>
           </div>
         )}
+        </div>
+      </div>
+    </section>
+
+    {/* Features Divider */}
+    <div className="features-section-divider" aria-hidden="true">
+      <div className="hero-divider-scroll">
+        <div className="hero-divider-content">
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+          <span className="hero-divider-text">FEATURES OF YATRA</span>
+          <span className="hero-divider-star">✦</span>
+        </div>
+      </div>
+    </div>
+
+    {/* FEATURES OF YATRA section (content coming next) */}
+    <section className="features-section" aria-label="Features of Yatra">
+      <div className="features-container">
+        <h2 className="features-title">
+          <GlitchText 
+            koreanText="야트라의 특징" 
+            englishText="FEATURES OF" 
+            className="features-title-features" 
+            delay={0}
+          />
+          <br />
+          <GlitchText 
+            koreanText="" 
+            englishText="YATRA" 
+            className="features-title-rest" 
+            delay={500}
+          />
+        </h2>
+        <div className="features-event-media">
+          <div className="features-event-badge">
+            40+ Events with CASH PRICE
+          </div>
+          <img src={eventImage} alt="Yatra Event" className="features-event-image" />
+          <button className="features-show-more-btn">SHOW MORE</button>
         </div>
       </div>
     </section>
