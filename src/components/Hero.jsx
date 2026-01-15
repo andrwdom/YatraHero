@@ -80,7 +80,9 @@ function Hero() {
     return () => window.clearTimeout(t)
   }, [hasLoaded])
 
-  // Scroll-based settle interaction - continues until hero section is out of view
+  // Scroll-based settle interaction - continuous and proportional to scroll distance,
+  // but visually smoothed so it feels cinematic (no jitter/snapping).
+  // Progress is 0 at top of hero, 1 when hero has fully scrolled out of view.
   useEffect(() => {
     if (!hasLoaded) return
     const el = stageRef.current
@@ -88,35 +90,49 @@ function Hero() {
     if (!el || !heroEl) return
 
     let raf = 0
-
-    // Gentler easing for more gradual movement
-    const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+    let ticking = false
+    let lastTs = 0
+    let target = 0
+    let current = 0
 
     const update = () => {
       raf = 0
-      const scrollY = window.scrollY || window.pageYOffset || 0
-      const heroRect = heroEl.getBoundingClientRect()
-      const heroHeight = heroEl.offsetHeight
-      const viewportHeight = window.innerHeight
-      
-      // Calculate progress: 0 when hero is at top, 1 when hero is completely out of view
-      // Start settling after a small scroll (20px), fully settled when hero bottom passes viewport top
-      const scrollStart = 20
-      const scrollEnd = heroHeight - viewportHeight + scrollStart
-      const scrollProgress = Math.max(0, scrollY - scrollStart)
-      const t = Math.min(1, Math.max(0, scrollProgress / Math.max(1, scrollEnd - scrollStart)))
-      
-      // Use gentler easing for more gradual pixel-by-pixel movement
-      const eased = easeInOutCubic(t)
-      el.style.setProperty('--settle', eased.toFixed(4))
+      const ts = performance.now()
+      const dt = Math.min(50, ts - (lastTs || ts))
+      lastTs = ts
+
+      // Smoothing factor: higher dt -> slightly faster catch-up, but still gentle.
+      // This makes the motion feel "super smooth" while remaining responsive.
+      const alpha = 1 - Math.pow(0.001, dt / 16.67) // ~0.10–0.14 typical
+      current = current + (target - current) * alpha
+
+      el.style.setProperty('--settle', current.toFixed(4))
+
+      // Keep animating until we're very close to target.
+      if (Math.abs(target - current) > 0.0008) {
+        raf = window.requestAnimationFrame(update)
+      } else {
+        current = target
+        el.style.setProperty('--settle', current.toFixed(4))
+        ticking = false
+      }
     }
 
     const onScroll = () => {
-      if (raf) return
+      const rect = heroEl.getBoundingClientRect()
+      // When rect.top = 0 => progress 0
+      // When rect.top = -rect.height => progress 1 (hero fully scrolled past)
+      const raw = (-rect.top) / Math.max(1, rect.height)
+      target = Math.min(1, Math.max(0, raw))
+
+      if (ticking) return
+      ticking = true
+      if (raf) window.cancelAnimationFrame(raf)
       raf = window.requestAnimationFrame(update)
     }
 
-    update()
+    // Init target/current from current scroll position
+    onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
       window.removeEventListener('scroll', onScroll)
@@ -141,8 +157,8 @@ function Hero() {
       timeoutId = window.setTimeout(() => {
         if (cancelled) return
 
-        // Bloom 1–2 random lamps
-        const bloomCount = Math.random() < 0.35 ? 2 : 1
+        // Bloom 1–2 random lamps (sometimes 2 for simultaneous glow)
+        const bloomCount = Math.random() < 0.4 ? 2 : 1
         const picked = new Set()
         while (picked.size < bloomCount) {
           picked.add(lamps[Math.floor(Math.random() * lamps.length)].id)
@@ -206,7 +222,8 @@ function Hero() {
           {lamps.map((lamp) => {
             const seq = lampSeq[lamp.id] || 0
             const amp = (0.85 + Math.random() * 0.6).toFixed(2)
-            const dur = `${Math.round(520 + Math.random() * 680)}ms`
+            // Wider duration range: sometimes fast (800ms), sometimes slow (3500ms) for graceful variation
+            const dur = `${Math.round(800 + Math.random() * 2700)}ms`
 
             return (
               <span
@@ -217,6 +234,7 @@ function Hero() {
                   '--y': `${lamp.y}%`,
                   '--amp': amp,
                   '--bloom-dur': dur,
+                  '--bloom-delay': `${Math.round(Math.random() * 200)}ms`,
                 }}
               />
             )
