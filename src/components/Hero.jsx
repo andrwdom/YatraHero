@@ -13,6 +13,8 @@ function Hero() {
   const doneKeysRef = useRef(new Set())
   const [doneCount, setDoneCount] = useState(0)
   const [hasLoaded, setHasLoaded] = useState(false)
+  const [isScrollReady, setIsScrollReady] = useState(false)
+  const stageRef = useRef(null)
 
   // Lantern (lamp) glow hotspots placed over the background art.
   // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
@@ -70,6 +72,46 @@ function Hero() {
     return () => window.clearTimeout(t)
   }, [hasLoaded, isLoading])
 
+  // After the entrance animation finishes, enable the scroll-based "settle" transforms.
+  useEffect(() => {
+    if (!hasLoaded) return
+    const t = window.setTimeout(() => setIsScrollReady(true), 1200)
+    return () => window.clearTimeout(t)
+  }, [hasLoaded])
+
+  // Scroll-based settle interaction (0px -> 40px). Clamped so it never drifts.
+  useEffect(() => {
+    if (!hasLoaded) return
+    const el = stageRef.current
+    if (!el) return
+
+    let raf = 0
+
+    // Gentler easing for more gradual movement
+    const easeInOutCubic = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
+    const update = () => {
+      raf = 0
+      const y = window.scrollY || window.pageYOffset || 0
+      const t = Math.min(1, Math.max(0, y / 40))
+      // Use gentler easing for more gradual pixel-by-pixel movement
+      const eased = easeInOutCubic(t)
+      el.style.setProperty('--settle', eased.toFixed(4))
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [hasLoaded])
+
   // Random lamp blooms (random order / random timing).
   useEffect(() => {
     if (isLoading) return
@@ -115,6 +157,7 @@ function Hero() {
   }, [isLoading, lamps])
 
   return (
+    <>
     <section className="hero">
       <div
         className={`hero-loader ${isLoading ? 'is-visible' : 'is-hidden'}`}
@@ -137,7 +180,8 @@ function Hero() {
 
       {/* Fixed-aspect "stage" that scales uniformly across all mobile sizes */}
       <div
-        className={`hero-stage ${isLoading ? 'is-loading' : ''} ${hasLoaded ? 'is-loaded' : ''}`}
+        ref={stageRef}
+        className={`hero-stage ${isLoading ? 'is-loading' : ''} ${hasLoaded ? 'is-loaded' : ''} ${isScrollReady ? 'is-scroll-ready' : ''}`}
         aria-busy={isLoading}
       >
         {/* Background Layer - Base */}
@@ -220,6 +264,12 @@ function Hero() {
         </div>
       </div>
     </section>
+    
+    {/* Black Background Section - After Divider */}
+    <section className="hero-black-section" aria-label="After hero section">
+      {/* Intentionally left blank — user will add content */}
+    </section>
+    </>
   )
 }
 
