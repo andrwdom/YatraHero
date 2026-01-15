@@ -1126,6 +1126,10 @@
   margin-top: 3rem;
 }
 
+.features-event-media + .features-event-media {
+  margin-top: 5rem;
+}
+
 .features-event-badge {
   position: absolute;
   top: 0;

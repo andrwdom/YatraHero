@@ -7,6 +7,7 @@ import yearText from '../assets/2026txt.png'
 import videoSrc from '../assets/video.mp4'
 import purpleBg from '../assets/purple.jpeg'
 import eventImage from '../assets/event.jpeg'
+import performanceImage from '../assets/performance.jpeg'
 
 function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart = false }) {
   const [isGlitching, setIsGlitching] = useState(false)
@@ -554,6 +555,13 @@ function Hero() {
             40+ Events with CASH PRICE
           </div>
           <img src={eventImage} alt="Yatra Event" className="features-event-image" />
+          <button className="features-show-more-btn">SHOW MORE</button>
+        </div>
+        <div className="features-event-media">
+          <div className="features-event-badge">
+            ELECTRIFYING PERFORMANCE
+          </div>
+          <img src={performanceImage} alt="Electrifying Performance" className="features-event-image" />
           <button className="features-show-more-btn">SHOW MORE</button>
         </div>
       </div>
