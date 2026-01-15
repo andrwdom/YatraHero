@@ -1,3 +1,6 @@
+/* Import Poppins from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /*
   IMPORTANT LAYOUT NOTE
   ---------------------
@@ -20,6 +23,22 @@
 @font-face {
   font-family: 'Akira Expanded';
   src: url('../assets/fonts/Akira Expanded Demo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Milker';
+  src: url('../assets/fonts/Milker.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gondens';
+  src: url('../assets/fonts/Gondens DEMO.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -974,4 +993,40 @@
   background: #000;
   position: relative;
   z-index: 0;
+  padding: 4rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-container {
+  max-width: 800px;
+  width: 100%;
+}
+
+.about-title {
+  font-family: 'Gondens', var(--hero-font-family);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.about-title-about {
+  color: #FFFFFF;
+}
+
+.about-title-rit {
+  color: #8C2855;
+}
+
+.about-content {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.85);
+  text-align: justify;
+  text-justify: inter-word;
 }

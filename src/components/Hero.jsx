@@ -296,8 +296,16 @@ function Hero() {
     </section>
     
     {/* Black Background Section - After Divider */}
-    <section className="hero-black-section" aria-label="After hero section">
-      {/* Intentionally left blank — user will add content */}
+    <section className="hero-black-section" aria-label="About section">
+      <div className="about-container">
+        <h2 className="about-title">
+          <span className="about-title-about">ABOUT</span>{' '}
+          <span className="about-title-rit">RIT</span>
+        </h2>
+        <p className="about-content">
+          Rajalakshmi Institute of Technology is one of the best engineering colleges in Chennai and is part of Rajalakshmi Institutions, which has been synonymous with providing excellence in higher education to students for many years. Rajalakshmi Institute of Technology was established in 2008 and is affiliated with Anna University Chennai. Ours is one among the few Colleges to receive accreditation for Under Graduate Engineering programmes from the National Board of Accreditation (NBA), New Delhi, as soon as attaining the eligibility to apply for accreditation. The College is accredited by the National Assessment and Accreditation Council (NAAC) with 'A++' Grade.
+        </p>
+      </div>
     </section>
     </>
   )
