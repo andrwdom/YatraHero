@@ -472,9 +472,9 @@
   transform: translateX(-100%);
 }
 
-/* Glitch animation - runs once initially, then randomly */
+/* Glitch animation - runs once initially, then randomly between 4-12 seconds */
 .hero-stage.is-loaded .hero-year-text::before {
-  animation: hero-year-glitch 75s ease-in-out infinite;
+  animation: hero-year-glitch 16s ease-in-out infinite;
   animation-delay: 1200ms;
 }
 
@@ -517,128 +517,128 @@
     transform: translateX(100%);
   }
   
-  /* Random glitch 1 - around 18% (13.5s) */
-  17.8%, 18.5% {
+  /* Random glitch 1 - around 4.5s (28% of 16s) */
+  27.5%, 28.2% {
     opacity: 0;
     transform: translateX(-100%);
   }
-  17.9% {
+  27.6% {
     opacity: 1;
     transform: translateX(-80%);
   }
-  18% {
+  27.7% {
     opacity: 0.4;
     transform: translateX(-20%);
   }
-  18.1% {
+  27.8% {
     opacity: 1;
     transform: translateX(10%);
   }
-  18.2% {
+  27.9% {
     opacity: 0.2;
     transform: translateX(-15%);
   }
-  18.3% {
+  28% {
     opacity: 0.9;
     transform: translateX(25%);
   }
-  18.4% {
+  28.1% {
     opacity: 0;
     transform: translateX(100%);
   }
   
-  /* Random glitch 2 - around 38% (28.5s) */
-  37.8%, 38.5% {
+  /* Random glitch 2 - around 7s (44% of 16s) */
+  43.5%, 44.2% {
     opacity: 0;
     transform: translateX(-100%);
   }
-  37.9% {
+  43.6% {
     opacity: 0.9;
     transform: translateX(-60%);
   }
-  38% {
+  43.7% {
     opacity: 0.3;
     transform: translateX(-5%);
   }
-  38.1% {
+  43.8% {
     opacity: 1;
     transform: translateX(18%);
   }
-  38.2% {
+  43.9% {
     opacity: 0.5;
     transform: translateX(-8%);
   }
-  38.3% {
+  44% {
     opacity: 0.95;
     transform: translateX(12%);
   }
-  38.4% {
+  44.1% {
     opacity: 0;
     transform: translateX(100%);
   }
   
-  /* Random glitch 3 - around 58% (43.5s) */
-  57.8%, 58.5% {
+  /* Random glitch 3 - around 9.5s (59% of 16s) */
+  58.5%, 59.2% {
     opacity: 0;
     transform: translateX(-100%);
   }
-  57.9% {
+  58.6% {
     opacity: 1;
     transform: translateX(-40%);
   }
-  58% {
+  58.7% {
     opacity: 0.2;
     transform: translateX(5%);
   }
-  58.1% {
+  58.8% {
     opacity: 0.95;
     transform: translateX(-12%);
   }
-  58.2% {
+  58.9% {
     opacity: 0.4;
     transform: translateX(22%);
   }
-  58.3% {
+  59% {
     opacity: 1;
     transform: translateX(0%);
   }
-  58.4% {
+  59.1% {
     opacity: 0;
     transform: translateX(100%);
   }
   
-  /* Random glitch 4 - around 78% (58.5s) */
-  77.8%, 78.5% {
+  /* Random glitch 4 - around 11.5s (72% of 16s) */
+  71.5%, 72.2% {
     opacity: 0;
     transform: translateX(-100%);
   }
-  77.9% {
+  71.6% {
     opacity: 0.8;
     transform: translateX(-70%);
   }
-  78% {
+  71.7% {
     opacity: 1;
     transform: translateX(-25%);
   }
-  78.1% {
+  71.8% {
     opacity: 0.3;
     transform: translateX(8%);
   }
-  78.2% {
+  71.9% {
     opacity: 0.9;
     transform: translateX(-15%);
   }
-  78.3% {
+  72% {
     opacity: 0.6;
     transform: translateX(28%);
   }
-  78.4% {
+  72.1% {
     opacity: 0;
     transform: translateX(100%);
   }
   
   /* End of cycle */
-  79%, 100% {
+  73%, 100% {
     opacity: 0;
     transform: translateX(-100%);
   }
@@ -834,16 +834,16 @@
     transform: translateX(0) rotate(0deg);
   }
   20% {
-    transform: translateX(-2px) rotate(-0.4deg);
+    transform: translateX(-8px) rotate(-1.5deg);
   }
   40% {
-    transform: translateX(-4px) rotate(-0.8deg);
+    transform: translateX(-14px) rotate(-2.5deg);
   }
   60% {
-    transform: translateX(-3px) rotate(-0.65deg);
+    transform: translateX(-10px) rotate(-2deg);
   }
   80% {
-    transform: translateX(-1px) rotate(-0.25deg);
+    transform: translateX(-5px) rotate(-1deg);
   }
 }
 
@@ -919,7 +919,7 @@
 /* Hero Section Divider */
 .hero-section-divider {
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   left: 0;
   width: 100%;
   background-image: url('../assets/purple.jpeg');
@@ -934,6 +934,7 @@
   height: auto;
   line-height: 1;
   filter: saturate(0.85);
+  margin: 0;
 }
 
 .hero-divider-scroll {
@@ -980,27 +981,25 @@
   }
 }
 
-/* Crop hero background at bottom - no gap */
-.hero-bleed-bg {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 35px), 0 calc(100% - 35px));
-}
-
-.hero-stage {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 35px), 0 calc(100% - 35px));
-}
-
-.hero {
-  margin-bottom: 0;
-  padding-bottom: 0;
-}
+/* No clip-path - divider overlaps seamlessly */
 
 /* Black Background Section - After Divider */
 .hero-black-section {
   width: 100%;
-  min-height: 100vh;
-  background: #000;
+  /* Make this section "pinned" long enough to swap content while scrolling */
+  min-height: 200vh;
+  background-image: url('../assets/black.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
   position: relative;
   z-index: 0;
+}
+
+.about-sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
   padding: 4rem 1.5rem;
   display: flex;
   align-items: center;
@@ -1040,4 +1039,33 @@
   color: rgba(255, 255, 255, 0.85);
   text-align: justify;
   text-justify: inter-word;
+}
+
+/* About scroll-reveal (blur -> sharp) */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  filter: blur(14px);
+  transition:
+    opacity 700ms ease,
+    transform 700ms cubic-bezier(0.2, 0.85, 0.22, 1),
+    filter 700ms ease;
+  will-change: opacity, transform, filter;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+/* Exit state used during the ABOUT RIT -> ABOUT YATRA'26 swap */
+.reveal.is-exiting {
+  opacity: 0;
+  transform: translateY(-10px);
+  filter: blur(16px);
+  transition:
+    opacity 260ms ease,
+    transform 260ms ease,
+    filter 260ms ease;
 }

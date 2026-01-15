@@ -16,6 +16,11 @@ function Hero() {
   const [isScrollReady, setIsScrollReady] = useState(false)
   const stageRef = useRef(null)
   const heroRef = useRef(null)
+  const aboutRef = useRef(null)
+  const aboutTitleRef = useRef(null)
+  const aboutContentRef = useRef(null)
+  const [aboutStep, setAboutStep] = useState(0) // 0 = ABOUT RIT, 1 = ABOUT YATRA'26
+  const hasAboutEnteredRef = useRef(false)
 
   // Lantern (lamp) glow hotspots placed over the background art.
   // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
@@ -79,6 +84,96 @@ function Hero() {
     const t = window.setTimeout(() => setIsScrollReady(true), 1200)
     return () => window.clearTimeout(t)
   }, [hasLoaded])
+
+  const runAboutReveal = useCallback(() => {
+    const titleEl = aboutTitleRef.current
+    const contentEl = aboutContentRef.current
+    if (!titleEl || !contentEl) return
+
+    // Reset classes so we can replay the reveal on step change.
+    titleEl.classList.remove('is-visible', 'is-exiting')
+    contentEl.classList.remove('is-visible', 'is-exiting')
+
+    // Next frame: start reveal.
+    window.requestAnimationFrame(() => {
+      titleEl.classList.add('is-visible')
+      window.setTimeout(() => contentEl.classList.add('is-visible'), 180)
+    })
+  }, [])
+
+  // About section: reveal when it enters view (and remember it's been seen).
+  useEffect(() => {
+    const sectionEl = aboutRef.current
+    if (!sectionEl) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry?.isIntersecting) return
+        hasAboutEnteredRef.current = true
+        runAboutReveal()
+        observer.disconnect()
+      },
+      { threshold: 0.28, rootMargin: '0px 0px -10% 0px' }
+    )
+
+    observer.observe(sectionEl)
+    return () => {
+      observer.disconnect()
+    }
+  }, [runAboutReveal])
+
+  // Re-run reveal when we swap step content (only after the user has reached the section once).
+  useEffect(() => {
+    if (!hasAboutEnteredRef.current) return
+    runAboutReveal()
+  }, [aboutStep, runAboutReveal])
+
+  // Sticky scroll progression inside About:
+  // - Keep ABOUT RIT for ~one viewport of scroll within the section
+  // - Then swap to ABOUT YATRA'26
+  // Scrolling back up swaps back to ABOUT RIT.
+  useEffect(() => {
+    const sectionEl = aboutRef.current
+    if (!sectionEl) return
+
+    let raf = 0
+    const update = () => {
+      raf = 0
+      // Only run after the section has been seen (so we don't animate offscreen on load).
+      if (!hasAboutEnteredRef.current) return
+
+      const rect = sectionEl.getBoundingClientRect()
+      const total = rect.height - window.innerHeight
+      if (total <= 0) return
+
+      // How far we've scrolled through this section (0..total)
+      const scrolled = Math.min(total, Math.max(0, -rect.top))
+
+      // Swap quickly (about ~2 wheel "steps" on typical mice):
+      // Use a small absolute scroll distance with hysteresis to avoid flicker.
+      const enterAt = Math.min(total, Math.max(180, window.innerHeight * 0.18))
+      const exitAt = Math.max(0, enterAt * 0.55)
+
+      setAboutStep((prev) => {
+        if (prev === 0 && scrolled >= enterAt) return 1
+        if (prev === 1 && scrolled <= exitAt) return 0
+        return prev
+      })
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [])
 
   // Scroll-based settle interaction - continuous and proportional to scroll distance,
   // but visually smoothed so it feels cinematic (no jitter/snapping).
@@ -296,15 +391,42 @@ function Hero() {
     </section>
     
     {/* Black Background Section - After Divider */}
-    <section className="hero-black-section" aria-label="About section">
-      <div className="about-container">
-        <h2 className="about-title">
-          <span className="about-title-about">ABOUT</span>{' '}
-          <span className="about-title-rit">RIT</span>
-        </h2>
-        <p className="about-content">
-          Rajalakshmi Institute of Technology is one of the best engineering colleges in Chennai and is part of Rajalakshmi Institutions, which has been synonymous with providing excellence in higher education to students for many years. Rajalakshmi Institute of Technology was established in 2008 and is affiliated with Anna University Chennai. Ours is one among the few Colleges to receive accreditation for Under Graduate Engineering programmes from the National Board of Accreditation (NBA), New Delhi, as soon as attaining the eligibility to apply for accreditation. The College is accredited by the National Assessment and Accreditation Council (NAAC) with 'A++' Grade.
-        </p>
+    <section className="hero-black-section" aria-label="About section" ref={aboutRef}>
+      <div className="about-sticky">
+        <div className="about-container">
+        {aboutStep === 0 ? (
+          <>
+            <h2 className="about-title reveal" ref={aboutTitleRef}>
+              <span className="about-title-about">ABOUT</span>{' '}
+              <span className="about-title-rit">RIT</span>
+            </h2>
+            <p className="about-content reveal" ref={aboutContentRef}>
+              Rajalakshmi Institute of Technology is one of the best engineering colleges in Chennai and is part of
+              Rajalakshmi Institutions, which has been synonymous with providing excellence in higher education to
+              students for many years. Rajalakshmi Institute of Technology was established in 2008 and is affiliated
+              with Anna University Chennai. Ours is one among the few Colleges to receive accreditation for Under
+              Graduate Engineering programmes from the National Board of Accreditation (NBA), New Delhi, as soon as
+              attaining the eligibility to apply for accreditation. The College is accredited by the National
+              Assessment and Accreditation Council (NAAC) with 'A++' Grade.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="about-title reveal" ref={aboutTitleRef}>
+              <span className="about-title-about">ABOUT</span>{' '}
+              <span className="about-title-rit">YATRA&apos;26</span>
+            </h2>
+            <p className="about-content reveal" ref={aboutContentRef}>
+              Yatra&apos;26 is a grand intercollege cultural fest at Rajalakshmi Institute of Technology organized by
+              the student community with the support of Faculties, Principal and Management. Main motive of Yatra is
+              involving or concerning the enthusiasm among students with a deep sense of humor which is also a part
+              of Cultural heritage. This enhance the confidence level of the students thereby allowing them to
+              perform better. In fact, students can also leverage the advantage of participating in various
+              activities. Many chief guests are being invited to join us
+            </p>
+          </>
+        )}
+        </div>
       </div>
     </section>
     </>
