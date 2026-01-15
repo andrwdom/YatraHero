@@ -311,15 +311,16 @@ function Hero() {
       // Matches the "overlapping stack" vibe from your reference.
       const s = Math.min(w, h)
       const spreadX = s * 0.33
-      const spreadY = s * 0.26
+      // Use more of the available vertical space (especially on mobile).
+      const spreadY = Math.min(h * 0.34, s * 0.52)
 
       const baseFinal = [
-        { x: -spreadX * 0.9, y: -spreadY * 0.15 },
-        { x: spreadX * 0.1, y: -spreadY * 0.95 },
-        { x: spreadX * 0.95, y: spreadY * 0.1 },
-        { x: spreadX * 0.45, y: spreadY * 0.78 },
-        { x: -spreadX * 0.62, y: spreadY * 0.9 },
-        { x: -spreadX * 0.98, y: spreadY * 0.28 },
+        { x: -spreadX * 0.92, y: -spreadY * 0.05 },
+        { x: spreadX * 0.12, y: -spreadY * 0.98 },
+        { x: spreadX * 0.98, y: spreadY * 0.08 },
+        { x: spreadX * 0.52, y: spreadY * 0.92 },
+        { x: -spreadX * 0.62, y: spreadY * 1.02 },
+        { x: -spreadX * 1.02, y: spreadY * 0.42 },
       ]
       finalPositions = baseFinal.slice(0, count)
 

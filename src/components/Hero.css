@@ -1139,8 +1139,8 @@
 
 .blast-section {
   width: 100%;
-  /* Extra scroll room so 6 "steps" can happen after center */
-  min-height: 360vh;
+  /* Enough scroll for 6 steps, without long dead-space after the last photo */
+  min-height: 240vh;
   background-image: url('../assets/pink2.jpeg');
   background-size: cover;
   background-position: center;
@@ -1182,7 +1182,7 @@
 .blast-collage {
   position: relative;
   width: 100%;
-  height: clamp(520px, 70vh, 820px);
+  height: clamp(560px, 74vh, 900px);
   margin-top: 2.6rem;
   z-index: 2;
 }
