@@ -1037,6 +1037,15 @@
   position: relative;
 }
 
+.features-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  z-index: 0;
+  pointer-events: none;
+}
+
 .features-section::before {
   content: '';
   position: absolute;
@@ -1046,7 +1055,7 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0 8px 40px rgba(0, 0, 0, 0.3));
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
   animation: features-clouds-float 18s ease-in-out infinite;
   animation-delay: 0s;
@@ -1118,6 +1127,14 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   z-index: 1;
   position: relative;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 900ms cubic-bezier(0.2, 0.9, 0.2, 1),
+    opacity 650ms ease,
+    filter 900ms ease;
 }
 
 .features-event-media {
@@ -1153,6 +1170,12 @@
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
+
+  will-change: transform, opacity, filter;
+  transition:
+    transform 700ms cubic-bezier(0.18, 0.9, 0.22, 1),
+    opacity 450ms ease,
+    filter 650ms ease;
 }
 
 .features-show-more-btn {
@@ -1177,6 +1200,87 @@
 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
+
+  will-change: transform, opacity, filter;
+}
+
+/* Features section entrance choreography:
+   - Images slide in (left/right) with blur
+   - Then the badge "punches" in
+   - Then buttons pop in */
+.features-section:not(.is-visible) .features-event-image {
+  opacity: 0;
+  filter: blur(18px);
+}
+
+.features-section:not(.is-visible) .features-event-media--left .features-event-image {
+  transform: translate3d(-70px, 0, 0) scale(1.03);
+}
+
+.features-section:not(.is-visible) .features-event-media--right .features-event-image {
+  transform: translate3d(70px, 0, 0) scale(1.03);
+}
+
+.features-section.is-visible .features-event-image {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* First image (left) appears immediately */
+.features-section.is-visible .features-event-media--left .features-event-image {
+  transition-delay: 0ms;
+}
+
+/* Second image (right) appears after the first one */
+.features-section.is-visible .features-event-media--right .features-event-image {
+  transition-delay: 600ms;
+}
+
+.features-section:not(.is-visible) .features-event-badge {
+  opacity: 0;
+  filter: blur(14px);
+  transform: translate(-50%, -50%) translateY(-18px) scale(0.92) rotate(-2deg);
+}
+
+.features-section.is-visible .features-event-badge {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate(-50%, -50%) translateY(0) scale(1) rotate(0deg);
+}
+
+/* Badge appears after its image settles */
+.features-section.is-visible .features-event-media--left .features-event-badge {
+  transition-delay: 900ms;
+}
+
+.features-section.is-visible .features-event-media--right .features-event-badge {
+  transition-delay: 1500ms; /* After second image appears */
+}
+
+.features-section:not(.is-visible) .features-show-more-btn {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateX(-50%) translateY(14px) scale(0.72);
+}
+
+.features-section.is-visible .features-show-more-btn {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateX(-50%) translateY(0) scale(1);
+  transition:
+    transform 520ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 280ms ease,
+    filter 520ms ease;
+}
+
+/* Buttons appear after their badges */
+.features-section.is-visible .features-event-media--left .features-show-more-btn {
+  transition-delay: 1180ms;
+}
+
+.features-section.is-visible .features-event-media--right .features-show-more-btn {
+  transition-delay: 1780ms; /* After second badge appears */
 }
 
 .features-show-more-btn:hover {

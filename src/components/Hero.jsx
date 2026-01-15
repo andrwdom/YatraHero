@@ -531,7 +531,11 @@ function Hero() {
     </div>
 
     {/* FEATURES OF YATRA section (content coming next) */}
-    <section className="features-section" aria-label="Features of Yatra" ref={featuresSectionRef}>
+    <section
+      className={`features-section ${isFeaturesSectionVisible ? 'is-visible' : ''}`}
+      aria-label="Features of Yatra"
+      ref={featuresSectionRef}
+    >
       <div className="features-container">
         <h2 className="features-title">
           <GlitchText 
@@ -550,14 +554,14 @@ function Hero() {
             shouldStart={isFeaturesSectionVisible}
           />
         </h2>
-        <div className="features-event-media">
+        <div className="features-event-media features-event-media--left">
           <div className="features-event-badge">
             40+ Events with CASH PRICE
           </div>
           <img src={eventImage} alt="Yatra Event" className="features-event-image" />
           <button className="features-show-more-btn">SHOW MORE</button>
         </div>
-        <div className="features-event-media">
+        <div className="features-event-media features-event-media--right">
           <div className="features-event-badge">
             ELECTRIFYING PERFORMANCE
           </div>
