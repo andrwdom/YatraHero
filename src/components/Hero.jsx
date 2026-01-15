@@ -14,15 +14,26 @@ function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart
   const [showEnglish, setShowEnglish] = useState(false)
 
   useEffect(() => {
-    if (!shouldStart) return
+    let glitchTimer = 0
+    let transitionTimer = 0
+
+    // When the section leaves view, reset so the effect can replay next time.
+    if (!shouldStart) {
+      setIsGlitching(false)
+      setShowEnglish(false)
+      return () => {
+        if (glitchTimer) clearTimeout(glitchTimer)
+        if (transitionTimer) clearTimeout(transitionTimer)
+      }
+    }
 
     // Start glitch effect after delay
-    const glitchTimer = setTimeout(() => {
+    glitchTimer = window.setTimeout(() => {
       setIsGlitching(true)
     }, 1000 + delay)
 
     // Transition to English after glitch
-    const transitionTimer = setTimeout(() => {
+    transitionTimer = window.setTimeout(() => {
       setShowEnglish(true)
       setIsGlitching(false)
     }, 2500 + delay)
@@ -183,11 +194,20 @@ function Hero() {
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
-        if (!entry?.isIntersecting) return
-        setIsFeaturesSectionVisible(true)
-        observer.disconnect()
+        if (!entry) return
+
+        // Hysteresis prevents flicker + avoids awkward mid-section resets:
+        // - Enter once ~20% visible
+        // - Reset only when almost gone (~5% visible)
+        const ratio = entry.intersectionRatio || 0
+
+        setIsFeaturesSectionVisible((prev) => {
+          if (!prev && ratio >= 0.2) return true
+          if (prev && ratio <= 0.05) return false
+          return prev
+        })
       },
-      { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+      { threshold: [0, 0.05, 0.2], rootMargin: '0px 0px -10% 0px' }
     )
 
     observer.observe(sectionEl)
@@ -453,18 +473,35 @@ function Hero() {
       {/* Section Divider - Bottom of Hero */}
       <div className="hero-section-divider">
         <div className="hero-divider-scroll">
-          <div className="hero-divider-content">
-            <span className="hero-divider-text">14</span>
-            <span className="hero-divider-star">✦</span>
-            <span className="hero-divider-text">FEB 13 & 14</span>
-            <span className="hero-divider-star">✦</span>
-            <span className="hero-divider-text">FEB 14</span>
-            <span className="hero-divider-star">✦</span>
-            <span className="hero-divider-text">14</span>
-            <span className="hero-divider-star">✦</span>
-            <span className="hero-divider-text">FEB 13 & 14</span>
-            <span className="hero-divider-star">✦</span>
-            <span className="hero-divider-text">FEB 14</span>
+          <div className="hero-divider-track" aria-label="Event dates">
+            <div className="hero-divider-content">
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+            </div>
+            <div className="hero-divider-content" aria-hidden="true">
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+              <span className="hero-divider-text">FEB 13 & 14</span>
+              <span className="hero-divider-star">✦</span>
+            </div>
           </div>
         </div>
       </div>
@@ -513,19 +550,35 @@ function Hero() {
     {/* Features Divider */}
     <div className="features-section-divider" aria-hidden="true">
       <div className="hero-divider-scroll">
-        <div className="hero-divider-content">
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
-          <span className="hero-divider-text">FEATURES OF YATRA</span>
-          <span className="hero-divider-star">✦</span>
+        <div className="hero-divider-track">
+          <div className="hero-divider-content">
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+          </div>
+          <div className="hero-divider-content" aria-hidden="true">
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+            <span className="hero-divider-text">FEATURES OF YATRA</span>
+            <span className="hero-divider-star">✦</span>
+          </div>
         </div>
       </div>
     </div>

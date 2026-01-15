@@ -943,6 +943,17 @@
   line-height: 1;
   filter: saturate(0.85);
   margin: 0;
+  isolation: isolate;
+}
+
+.hero-section-divider::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Darken purple background a bit so text pops */
+  background: rgba(0, 0, 0, 0.22);
+  z-index: 0;
+  pointer-events: none;
 }
 
 .hero-divider-scroll {
@@ -950,13 +961,21 @@
   overflow: hidden;
   white-space: nowrap;
   position: relative;
+  z-index: 1;
+}
+
+.hero-divider-track {
+  display: inline-flex;
+  align-items: center;
+  width: max-content;
+  will-change: transform;
+  animation: hero-divider-scroll 25s linear infinite;
 }
 
 .hero-divider-content {
   display: inline-flex;
   align-items: center;
   gap: 1.2rem;
-  animation: hero-divider-scroll 25s linear infinite;
   font-family: 'Akira Expanded', var(--hero-font-family);
   font-size: 1.2rem;
   color: #FFFFFF;
@@ -1019,7 +1038,7 @@
 }
 
 /* Reverse direction so the star runs left -> right */
-.features-section-divider .hero-divider-content {
+.features-section-divider .hero-divider-track {
   animation-direction: reverse;
 }
 
@@ -1211,6 +1230,7 @@
 .features-section:not(.is-visible) .features-event-image {
   opacity: 0;
   filter: blur(18px);
+  transition: none;
 }
 
 .features-section:not(.is-visible) .features-event-media--left .features-event-image {
@@ -1241,6 +1261,7 @@
   opacity: 0;
   filter: blur(14px);
   transform: translate(-50%, -50%) translateY(-18px) scale(0.92) rotate(-2deg);
+  transition: none;
 }
 
 .features-section.is-visible .features-event-badge {
@@ -1262,6 +1283,7 @@
   opacity: 0;
   filter: blur(10px);
   transform: translateX(-50%) translateY(14px) scale(0.72);
+  transition: none;
 }
 
 .features-section.is-visible .features-show-more-btn {
