@@ -9,7 +9,7 @@ import purpleBg from '../assets/purple.jpeg'
 import eventImage from '../assets/event.jpeg'
 import performanceImage from '../assets/performance.jpeg'
 
-function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart = false }) {
+function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart = false, variant = 'glitch' }) {
   const [isGlitching, setIsGlitching] = useState(false)
   const [showEnglish, setShowEnglish] = useState(false)
 
@@ -27,25 +27,35 @@ function GlitchText({ koreanText, englishText, className, delay = 0, shouldStart
       }
     }
 
-    // Start glitch effect after delay
-    glitchTimer = window.setTimeout(() => {
-      setIsGlitching(true)
-    }, 1000 + delay)
+    if (variant === 'glitch') {
+      // Start glitch effect after delay
+      glitchTimer = window.setTimeout(() => {
+        setIsGlitching(true)
+      }, 1000 + delay)
 
-    // Transition to English after glitch
-    transitionTimer = window.setTimeout(() => {
-      setShowEnglish(true)
-      setIsGlitching(false)
-    }, 2500 + delay)
+      // Transition to English after glitch
+      transitionTimer = window.setTimeout(() => {
+        setShowEnglish(true)
+        setIsGlitching(false)
+      }, 2500 + delay)
+    } else {
+      // Blur-only crossfade (no glitch)
+      transitionTimer = window.setTimeout(() => {
+        setShowEnglish(true)
+        setIsGlitching(false)
+      }, 900 + delay)
+    }
 
     return () => {
       clearTimeout(glitchTimer)
       clearTimeout(transitionTimer)
     }
-  }, [delay, shouldStart])
+  }, [delay, shouldStart, variant])
 
   return (
-    <span className={`glitch-text-wrapper ${className} ${isGlitching ? 'is-glitching' : ''} ${showEnglish ? 'show-english' : ''}`}>
+    <span
+      className={`glitch-text-wrapper ${variant === 'blur' ? 'glitch-text-wrapper--blur' : ''} ${className} ${isGlitching ? 'is-glitching' : ''} ${showEnglish ? 'show-english' : ''}`}
+    >
       {koreanText && (
         <span className="glitch-text-korean">{koreanText}</span>
       )}
@@ -67,9 +77,31 @@ function Hero() {
   const aboutTitleRef = useRef(null)
   const aboutContentRef = useRef(null)
   const featuresSectionRef = useRef(null)
+  const blastSectionRef = useRef(null)
+  const blastCollageRef = useRef(null)
+  const blastPhotoElsRef = useRef([])
   const [aboutStep, setAboutStep] = useState(0) // 0 = ABOUT RIT, 1 = ABOUT YATRA'26
   const hasAboutEnteredRef = useRef(false)
   const [isFeaturesSectionVisible, setIsFeaturesSectionVisible] = useState(false)
+  const [isBlastSectionVisible, setIsBlastSectionVisible] = useState(false)
+
+  const blastImages = useMemo(() => {
+    // Use only web-safe formats (HEIC isn't reliably supported in browsers).
+    const modules = import.meta.glob('../assets/gal/*.{jpg,jpeg,png,webp,gif}', {
+      eager: true,
+      import: 'default',
+    })
+
+    const srcs = Object.keys(modules)
+      .sort((a, b) => a.localeCompare(b))
+      .map((k) => modules[k])
+
+    // Guarantee exactly 6 rendered <img> nodes for the layout.
+    // If fewer than 6 usable images exist, repeat the last one.
+    const out = [...srcs]
+    while (out.length > 0 && out.length < 6) out.push(out[out.length - 1])
+    return out.slice(0, 6)
+  }, [])
 
   // Lantern (lamp) glow hotspots placed over the background art.
   // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
@@ -213,6 +245,150 @@ function Hero() {
     observer.observe(sectionEl)
     return () => {
       observer.disconnect()
+    }
+  }, [])
+
+  // BLAST INTO PAST section: trigger blur crossfade when section enters view
+  useEffect(() => {
+    const sectionEl = blastSectionRef.current
+    if (!sectionEl) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0]
+        if (!entry) return
+
+        const ratio = entry.intersectionRatio || 0
+        setIsBlastSectionVisible((prev) => {
+          if (!prev && ratio >= 0.2) return true
+          if (prev && ratio <= 0.05) return false
+          return prev
+        })
+      },
+      { threshold: [0, 0.05, 0.2], rootMargin: '0px 0px -10% 0px' }
+    )
+
+    observer.observe(sectionEl)
+    return () => {
+      observer.disconnect()
+    }
+  }, [])
+
+  // BLAST collage: scroll-driven convergence (no timers, fully reversible).
+  useEffect(() => {
+    const sectionEl = blastSectionRef.current
+    const collageEl = blastCollageRef.current
+    if (!sectionEl || !collageEl) return
+
+    const clamp01 = (v) => Math.min(1, Math.max(0, v))
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v))
+    const lerp = (a, b, t) => a + (b - a) * t
+    const easeInOutCubic = (t) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+
+    let raf = 0
+    let cachedW = 0
+    let cachedH = 0
+    let finalPositions = []
+    let startPositions = []
+
+    const computeLayout = () => {
+      const r = collageEl.getBoundingClientRect()
+      const w = Math.max(1, r.width)
+      const h = Math.max(1, r.height)
+
+      if (Math.abs(w - cachedW) < 1 && Math.abs(h - cachedH) < 1 && finalPositions.length === 6) return
+      cachedW = w
+      cachedH = h
+
+      // Randomly-stacked (but evenly spread) end-state (relative to collage center).
+      // Matches the "overlapping stack" vibe from your reference.
+      const s = Math.min(w, h)
+      const spreadX = s * 0.33
+      const spreadY = s * 0.26
+
+      finalPositions = [
+        { x: -spreadX * 0.9, y: -spreadY * 0.15 },
+        { x: spreadX * 0.1, y: -spreadY * 0.95 },
+        { x: spreadX * 0.95, y: spreadY * 0.1 },
+        { x: spreadX * 0.45, y: spreadY * 0.78 },
+        { x: -spreadX * 0.62, y: spreadY * 0.9 },
+        { x: -spreadX * 0.98, y: spreadY * 0.28 },
+      ]
+
+      // Start positions: come in from different sides, larger travel.
+      const startDirs = [
+        { x: -1, y: -0.15 },
+        { x: 1, y: -0.25 },
+        { x: 1, y: 0.2 },
+        { x: 0.75, y: 0.9 },
+        { x: -0.6, y: 1 },
+        { x: -1, y: 0.55 },
+      ]
+
+      const amp = s * 0.9
+      startPositions = finalPositions.map((p, i) => ({
+        x: p.x + (startDirs[i]?.x ?? 0) * amp,
+        y: p.y + (startDirs[i]?.y ?? 0) * amp,
+      }))
+    }
+
+    const update = () => {
+      raf = 0
+      computeLayout()
+
+      const rect = sectionEl.getBoundingClientRect()
+      const vh = Math.max(1, window.innerHeight)
+
+      // We wait until the user reaches the CENTER of this section.
+      // Then: 6 scroll "steps" reveal 6 images, one-by-one.
+      const total = rect.height - vh
+      if (total <= 0) return
+
+      const scrolled = clamp(-rect.top, 0, total)
+      const centerAt = total * 0.5
+      const afterCenter = scrolled - centerAt
+
+      // One "step" per image. Tuned so users need multiple wheel/touch scrolls.
+      const step = Math.max(160, vh * 0.22)
+
+      const els = blastPhotoElsRef.current
+      for (let i = 0; i < els.length; i += 1) {
+        const el = els[i]
+        if (!el) continue
+
+        const base = finalPositions[i] || { x: 0, y: 0 }
+        const start = startPositions[i] || { x: 0, y: 0 }
+
+        // Local progress for each image: one-by-one sequence tied to scroll.
+        const t = clamp01((afterCenter - i * step) / step)
+        const e = easeInOutCubic(t)
+
+        const opacity = e
+        const scale = lerp(1.55, 1.0, e) // big -> smaller
+        const x = lerp(start.x, base.x, e)
+        const y = lerp(start.y, base.y, e)
+
+        el.style.opacity = `${opacity}`
+        el.style.transform = `translate3d(-50%, -50%, 0) translate3d(${x.toFixed(2)}px, ${y.toFixed(
+          2
+        )}px, 0) scale(${scale.toFixed(4)})`
+        el.style.zIndex = `${10 + i}`
+      }
+    }
+
+    const onScroll = () => {
+      if (raf) return
+      raf = window.requestAnimationFrame(update)
+    }
+
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      if (raf) window.cancelAnimationFrame(raf)
     }
   }, [])
 
@@ -597,6 +773,7 @@ function Hero() {
             className="features-title-features" 
             delay={0}
             shouldStart={isFeaturesSectionVisible}
+            variant="blur"
           />
           <br />
           <GlitchText 
@@ -605,6 +782,7 @@ function Hero() {
             className="features-title-rest" 
             delay={500}
             shouldStart={isFeaturesSectionVisible}
+            variant="blur"
           />
         </h2>
         <div className="features-event-media features-event-media--left">
@@ -620,6 +798,53 @@ function Hero() {
           </div>
           <img src={performanceImage} alt="Electrifying Performance" className="features-event-image" />
           <button className="features-show-more-btn">SHOW MORE</button>
+        </div>
+      </div>
+    </section>
+
+    {/* BLAST INTO PAST section */}
+    <section
+      className={`blast-section ${isBlastSectionVisible ? 'is-visible' : ''}`}
+      aria-label="Blast into Past"
+      ref={blastSectionRef}
+    >
+      <div className="blast-sticky">
+        <div className="features-container">
+          <h2 className="features-title">
+            <GlitchText
+              koreanText="과거 속으로 돌진하다"
+              englishText="BLAST INTO THE"
+              className="blast-title-prefix"
+              delay={0}
+              shouldStart={isBlastSectionVisible}
+              variant="blur"
+            />
+            <br />
+            <GlitchText
+              koreanText=""
+              englishText="PAST"
+              className="blast-title-highlight"
+              delay={500}
+              shouldStart={isBlastSectionVisible}
+              variant="blur"
+            />
+          </h2>
+
+          <div className="blast-collage" ref={blastCollageRef} aria-hidden="true">
+            {blastImages.map((src, idx) => (
+              <img
+                key={`${src}-${idx}`}
+                ref={(el) => {
+                  blastPhotoElsRef.current[idx] = el
+                }}
+                src={src}
+                alt=""
+                className="blast-photo"
+                draggable="false"
+                loading="lazy"
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

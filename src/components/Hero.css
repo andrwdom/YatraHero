@@ -1137,6 +1137,72 @@
   color: #FFFFFF;
 }
 
+.blast-section {
+  width: 100%;
+  /* Extra scroll room so 6 "steps" can happen after center */
+  min-height: 360vh;
+  background-image: url('../assets/pink2.jpeg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 0;
+  display: block;
+  position: relative;
+}
+
+.blast-section::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.blast-title-prefix {
+  color: #FFFFFF;
+}
+
+.blast-title-highlight {
+  color: #000000;
+}
+
+.blast-sticky {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  padding: 5rem 1.5rem 4rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 1; /* above overlay */
+}
+
+.blast-collage {
+  position: relative;
+  width: 100%;
+  height: clamp(520px, 70vh, 820px);
+  margin-top: 2.6rem;
+  z-index: 2;
+}
+
+.blast-photo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(170px, 60vw, 340px);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 12px;
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0) scale(1.55);
+  will-change: transform, opacity;
+  transition: none; /* scroll-driven: no time-based easing */
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, 0.22),
+    0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
 .features-event-image {
   width: 100%;
   max-width: 100%;
@@ -1326,7 +1392,7 @@
   opacity: 1;
   filter: blur(0);
   transform: translateX(0);
-  transition: opacity 0.3s ease, filter 0.3s ease, transform 0.3s ease;
+  transition: opacity 700ms ease, filter 700ms ease, transform 700ms cubic-bezier(0.2, 0.9, 0.22, 1);
 }
 
 .glitch-text-english {
@@ -1334,12 +1400,18 @@
   opacity: 0;
   filter: blur(20px);
   transform: translateX(0);
-  transition: opacity 0.5s ease, filter 0.5s ease;
+  transition: opacity 750ms ease, filter 750ms ease;
   position: absolute;
   left: 0;
   top: 0;
   white-space: nowrap;
   pointer-events: none;
+}
+
+/* For blur-only variant: ensure no glitch keyframes ever run */
+.glitch-text-wrapper--blur.is-glitching .glitch-text-korean,
+.glitch-text-wrapper--blur.is-glitching .glitch-text-english {
+  animation: none !important;
 }
 
 .glitch-text-wrapper.is-glitching .glitch-text-korean {
