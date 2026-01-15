@@ -263,31 +263,32 @@ function Hero() {
     if (!el || !heroEl) return
 
     let raf = 0
-    let ticking = false
     let lastTs = 0
     let target = 0
     let current = 0
+    let isAnimating = false
 
-    const update = () => {
+    const update = (ts = performance.now()) => {
       raf = 0
-      const ts = performance.now()
       const dt = Math.min(50, ts - (lastTs || ts))
       lastTs = ts
 
-      // Smoothing factor: higher dt -> slightly faster catch-up, but still gentle.
-      // This makes the motion feel "super smooth" while remaining responsive.
-      const alpha = 1 - Math.pow(0.001, dt / 16.67) // ~0.10–0.14 typical
+      // Improved smoothing: faster response while maintaining smoothness
+      // Using a higher base value for more responsive animation
+      const alpha = 1 - Math.pow(0.85, dt / 16.67) // ~0.15–0.25 typical, more responsive
       current = current + (target - current) * alpha
 
-      el.style.setProperty('--settle', current.toFixed(4))
+      el.style.setProperty('--settle', current.toFixed(6))
 
-      // Keep animating until we're very close to target.
-      if (Math.abs(target - current) > 0.0008) {
+      // Keep animating until we're very close to target
+      const diff = Math.abs(target - current)
+      if (diff > 0.0001) {
         raf = window.requestAnimationFrame(update)
+        isAnimating = true
       } else {
         current = target
-        el.style.setProperty('--settle', current.toFixed(4))
-        ticking = false
+        el.style.setProperty('--settle', current.toFixed(6))
+        isAnimating = false
       }
     }
 
@@ -298,10 +299,10 @@ function Hero() {
       const raw = (-rect.top) / Math.max(1, rect.height)
       target = Math.min(1, Math.max(0, raw))
 
-      if (ticking) return
-      ticking = true
-      if (raf) window.cancelAnimationFrame(raf)
-      raf = window.requestAnimationFrame(update)
+      // Always start animation if not already running
+      if (!isAnimating && raf === 0) {
+        raf = window.requestAnimationFrame(update)
+      }
     }
 
     // Init target/current from current scroll position

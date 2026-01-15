@@ -434,10 +434,10 @@
   position: absolute;
   top: var(--year-top);
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate3d(-50%, 0, 0);
   z-index: 2;
   width: 44.5%;
-  will-change: top, transform, opacity, filter;
+  will-change: transform, opacity;
   transition:
     top 980ms cubic-bezier(0.18, 0.9, 0.22, 1) 120ms,
     transform 980ms cubic-bezier(0.18, 0.9, 0.22, 1) 120ms,
@@ -449,8 +449,7 @@
 /* Scroll settle (enabled only after entrance finishes). */
 .hero-stage.is-scroll-ready .hero-year-text {
   transform:
-    translate(-50%, 0)
-    translateY(calc(var(--year-settle-y) * var(--settle)))
+    translate3d(-50%, calc(var(--year-settle-y) * var(--settle)), 0)
     scale(calc(1 - (0.02 * var(--settle))));
 }
 
@@ -654,6 +653,9 @@
   height: auto;
   display: block;
   filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
 }
 
 
@@ -791,10 +793,10 @@
   position: absolute;
   top: var(--yatra-top);
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate3d(-50%, 0, 0);
   z-index: 3;
   width: var(--yatra-width);
-  will-change: top, transform, opacity, filter;
+  will-change: transform, opacity;
   transition:
     top 1050ms cubic-bezier(0.18, 0.9, 0.22, 1) 80ms,
     transform 1050ms cubic-bezier(0.18, 0.9, 0.22, 1) 80ms,
@@ -805,8 +807,7 @@
 /* Scroll settle (enabled only after entrance finishes). */
 .hero-stage.is-scroll-ready .hero-yatra-text {
   transform:
-    translate(-50%, 0)
-    translateY(calc(var(--yatra-settle-y) * var(--settle)))
+    translate3d(-50%, calc(var(--yatra-settle-y) * var(--settle)), 0)
     scale(calc(1 - (0.025 * var(--settle))));
   opacity: calc(1 - (0.06 * var(--settle)));
 }
@@ -826,6 +827,8 @@
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
   will-change: transform;
   transform-origin: 60% 55%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Wind effect (applied to the IMAGE so it doesn't fight scroll-settle on the container) */
@@ -836,19 +839,19 @@
 
 @keyframes hero-yatra-wind {
   0%, 100% {
-    transform: translateX(0) rotate(0deg);
+    transform: translate3d(0, 0, 0) rotate(0deg);
   }
   20% {
-    transform: translateX(-8px) rotate(-1.5deg);
+    transform: translate3d(-8px, 0, 0) rotate(-1.5deg);
   }
   40% {
-    transform: translateX(-14px) rotate(-2.5deg);
+    transform: translate3d(-14px, 0, 0) rotate(-2.5deg);
   }
   60% {
-    transform: translateX(-10px) rotate(-2deg);
+    transform: translate3d(-10px, 0, 0) rotate(-2deg);
   }
   80% {
-    transform: translateX(-5px) rotate(-1deg);
+    transform: translate3d(-5px, 0, 0) rotate(-1deg);
   }
 }
 
