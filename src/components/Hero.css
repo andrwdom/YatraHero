@@ -133,11 +133,11 @@
   --yatra-top: 8%;
   --yatra-width: 98%;
   --year-top: 59.25%;
-  /* Scroll-settle progress (0 -> 1). Set by JS and clamped to first 40px of scroll. */
+  /* Scroll-settle progress (0 -> 1). Set by JS, continues until hero is out of view. */
   --settle: 0;
-  /* Fallback settle distances (px) - reduced for more gradual movement */
-  --yatra-settle-y: 28px; /* moves DOWN (tucks behind Torii roof) */
-  --year-settle-y: -24px; /* moves UP (tucks behind Torii roof) */
+  /* Settle distances (px) - increased so images fully hide behind Torii */
+  --yatra-settle-y: 80px; /* moves DOWN (tucks behind Torii roof) */
+  --year-settle-y: -70px; /* moves UP (tucks behind Torii roof) */
 
   position: relative;
   /*
@@ -157,9 +157,9 @@
 /* Prefer container query units for settle distance (proportional to stage width). */
 @supports (width: 1cqw) {
   .hero-stage {
-    /* Reduced for more gradual pixel-by-pixel movement */
-    --yatra-settle-y: 7cqw;
-    --year-settle-y: -6cqw;
+    /* Increased so images fully hide behind Torii as you scroll */
+    --yatra-settle-y: 20cqw;
+    --year-settle-y: -18cqw;
   }
 }
 
@@ -776,6 +776,32 @@
   height: auto;
   display: block;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  will-change: transform;
+  transform-origin: 60% 55%;
+}
+
+/* Wind effect (applied to the IMAGE so it doesn't fight scroll-settle on the container) */
+.hero-stage.is-scroll-ready .yatra-text-image {
+  animation: hero-yatra-wind 9s ease-in-out infinite;
+  animation-delay: 4000ms;
+}
+
+@keyframes hero-yatra-wind {
+  0%, 100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  20% {
+    transform: translateX(-2px) rotate(-0.4deg);
+  }
+  40% {
+    transform: translateX(-4px) rotate(-0.8deg);
+  }
+  60% {
+    transform: translateX(-3px) rotate(-0.65deg);
+  }
+  80% {
+    transform: translateX(-1px) rotate(-0.25deg);
+  }
 }
 
 /* 5. Torii Gate Overlay (Foreground Mask - Topmost) - Locked with background */

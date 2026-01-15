@@ -15,6 +15,7 @@ function Hero() {
   const [hasLoaded, setHasLoaded] = useState(false)
   const [isScrollReady, setIsScrollReady] = useState(false)
   const stageRef = useRef(null)
+  const heroRef = useRef(null)
 
   // Lantern (lamp) glow hotspots placed over the background art.
   // These are NOT visible UI elements—just an overlay to make each lamp "bloom" randomly.
@@ -79,11 +80,12 @@ function Hero() {
     return () => window.clearTimeout(t)
   }, [hasLoaded])
 
-  // Scroll-based settle interaction (0px -> 40px). Clamped so it never drifts.
+  // Scroll-based settle interaction - continues until hero section is out of view
   useEffect(() => {
     if (!hasLoaded) return
     const el = stageRef.current
-    if (!el) return
+    const heroEl = heroRef.current
+    if (!el || !heroEl) return
 
     let raf = 0
 
@@ -92,8 +94,18 @@ function Hero() {
 
     const update = () => {
       raf = 0
-      const y = window.scrollY || window.pageYOffset || 0
-      const t = Math.min(1, Math.max(0, y / 40))
+      const scrollY = window.scrollY || window.pageYOffset || 0
+      const heroRect = heroEl.getBoundingClientRect()
+      const heroHeight = heroEl.offsetHeight
+      const viewportHeight = window.innerHeight
+      
+      // Calculate progress: 0 when hero is at top, 1 when hero is completely out of view
+      // Start settling after a small scroll (20px), fully settled when hero bottom passes viewport top
+      const scrollStart = 20
+      const scrollEnd = heroHeight - viewportHeight + scrollStart
+      const scrollProgress = Math.max(0, scrollY - scrollStart)
+      const t = Math.min(1, Math.max(0, scrollProgress / Math.max(1, scrollEnd - scrollStart)))
+      
       // Use gentler easing for more gradual pixel-by-pixel movement
       const eased = easeInOutCubic(t)
       el.style.setProperty('--settle', eased.toFixed(4))
@@ -158,7 +170,7 @@ function Hero() {
 
   return (
     <>
-    <section className="hero">
+    <section className="hero" ref={heroRef}>
       <div
         className={`hero-loader ${isLoading ? 'is-visible' : 'is-hidden'}`}
         role="status"
