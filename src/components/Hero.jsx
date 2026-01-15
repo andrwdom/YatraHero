@@ -340,17 +340,14 @@ function Hero() {
       const rect = sectionEl.getBoundingClientRect()
       const vh = Math.max(1, window.innerHeight)
 
-      // We wait until the user reaches the CENTER of this section.
-      // Then: 6 scroll "steps" reveal 6 images, one-by-one.
-      const total = rect.height - vh
-      if (total <= 0) return
+      // Mobile-friendly gating:
+      // Start revealing just after the title is comfortably in view (not halfway down the section).
+      // This avoids "scrolling and seeing nothing" on smaller mobile viewports.
+      const gateY = vh * 0.55 // start when section top passes ~55% viewport height
+      const afterGate = Math.max(0, gateY - rect.top)
 
-      const scrolled = clamp(-rect.top, 0, total)
-      const centerAt = total * 0.5
-      const afterCenter = scrolled - centerAt
-
-      // One "step" per image. Tuned so users need multiple wheel/touch scrolls.
-      const step = Math.max(160, vh * 0.22)
+      // One "step" per image. Smaller on mobile so 1 swipe/scroll ≈ 1 image.
+      const step = Math.max(90, vh * 0.12)
 
       const els = blastPhotoElsRef.current
       for (let i = 0; i < els.length; i += 1) {
@@ -361,7 +358,7 @@ function Hero() {
         const start = startPositions[i] || { x: 0, y: 0 }
 
         // Local progress for each image: one-by-one sequence tied to scroll.
-        const t = clamp01((afterCenter - i * step) / step)
+        const t = clamp01((afterGate - i * step) / step)
         const e = easeInOutCubic(t)
 
         const opacity = e
