@@ -96,11 +96,8 @@ function Hero() {
       .sort((a, b) => a.localeCompare(b))
       .map((k) => modules[k])
 
-    // Guarantee exactly 6 rendered <img> nodes for the layout.
-    // If fewer than 6 usable images exist, repeat the last one.
-    const out = [...srcs]
-    while (out.length > 0 && out.length < 6) out.push(out[out.length - 1])
-    return out.slice(0, 6)
+    // Never reuse a photo. If fewer than 6 exist, we render fewer than 6.
+    return srcs.slice(0, 6)
   }, [])
 
   // Lantern (lamp) glow hotspots placed over the background art.
@@ -291,15 +288,24 @@ function Hero() {
     let cachedH = 0
     let finalPositions = []
     let startPositions = []
+    let cachedCount = 0
 
     const computeLayout = () => {
       const r = collageEl.getBoundingClientRect()
       const w = Math.max(1, r.width)
       const h = Math.max(1, r.height)
+      const count = blastPhotoElsRef.current.filter(Boolean).length || blastImages.length || 0
 
-      if (Math.abs(w - cachedW) < 1 && Math.abs(h - cachedH) < 1 && finalPositions.length === 6) return
+      if (
+        Math.abs(w - cachedW) < 1 &&
+        Math.abs(h - cachedH) < 1 &&
+        finalPositions.length === count &&
+        count === cachedCount
+      )
+        return
       cachedW = w
       cachedH = h
+      cachedCount = count
 
       // Randomly-stacked (but evenly spread) end-state (relative to collage center).
       // Matches the "overlapping stack" vibe from your reference.
@@ -307,7 +313,7 @@ function Hero() {
       const spreadX = s * 0.33
       const spreadY = s * 0.26
 
-      finalPositions = [
+      const baseFinal = [
         { x: -spreadX * 0.9, y: -spreadY * 0.15 },
         { x: spreadX * 0.1, y: -spreadY * 0.95 },
         { x: spreadX * 0.95, y: spreadY * 0.1 },
@@ -315,9 +321,10 @@ function Hero() {
         { x: -spreadX * 0.62, y: spreadY * 0.9 },
         { x: -spreadX * 0.98, y: spreadY * 0.28 },
       ]
+      finalPositions = baseFinal.slice(0, count)
 
       // Start positions: come in from different sides, larger travel.
-      const startDirs = [
+      const baseDirs = [
         { x: -1, y: -0.15 },
         { x: 1, y: -0.25 },
         { x: 1, y: 0.2 },
@@ -325,6 +332,7 @@ function Hero() {
         { x: -0.6, y: 1 },
         { x: -1, y: 0.55 },
       ]
+      const startDirs = baseDirs.slice(0, count)
 
       const amp = s * 0.9
       startPositions = finalPositions.map((p, i) => ({
